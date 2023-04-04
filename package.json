@@ -1,0 +1,12 @@
+{
+  "name": "app_activecampaign_hooks",
+  "version": "1.0.0",
+  "description": "Google App Script endpoint for Active Campaign webhooks",
+  "scripts": {
+    "pull": "clasp pull",
+    "push": "clasp push",
+    "open": "clasp open"
+  },
+  "author": "Edward Meehan",
+  "license": "ISC"
+}
