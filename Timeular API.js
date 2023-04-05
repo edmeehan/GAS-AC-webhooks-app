@@ -21,6 +21,7 @@ function montlyHourReport(start, end, mentionID) {
   });
 
   const responseData = JSON.parse(response.getContentText());
+  // console.log(responseData)
   const {timeEntries} = responseData;
   const filteredEntriesByMentionID = timeEntries.filter(
       (item) => item.note.mentions.filter(
@@ -30,7 +31,7 @@ function montlyHourReport(start, end, mentionID) {
   const webdevTime = [];
   const meetingTime = [];
 
-  filteredEntriesByMentionID.foreach((item) => {
+  filteredEntriesByMentionID.forEach((item) => {
       const date1 = new Date(item.duration.startedAt);
       const date2 = new Date(item.duration.stoppedAt);
       const diff = (date2.getTime() - date1.getTime()) / (1000 * 60 * 60);

@@ -33,3 +33,39 @@ function getCurrentMonthBounds() {
   // UTC offset suffix Z breaks the api request - remove it
   return [firstDay.toISOString().replace('Z',''), lastDay.toISOString().replace('Z','')];
 }
+
+// returns encoded chart image
+function createBarChart(webdev, meeting, budget) {
+  // Create the data table
+  const dataTable = Charts.newDataTable()
+    .addColumn(Charts.ColumnType.STRING, 'Label')
+    .addColumn(Charts.ColumnType.NUMBER, 'Hours')
+    .addRow(['Billable', webdev])
+    .addRow(['Meetings', meeting])
+    .build();
+  
+  // Create the chart and set the chart options
+  const chart = Charts.newBarChart()
+    .setTitle(null)
+    .setXAxisTitle('Hours')
+    .setYAxisTitle(null)
+    .setDataTable(dataTable)
+    .setRange(0, budget)
+    .setOption('hAxis.gridlines.count', 5)
+    .setLegendPosition(Charts.Position.NONE)
+    .setDimensions(610, 200)
+    .setColors(['#113f67'])
+    .build();
+  
+  // Get the chart image as a blob
+  const chartBlob = chart.getAs('image/png');
+  
+  // Convert the chart blob to a base64 encoded string
+  const base64String = Utilities.base64Encode(chartBlob.getBytes());
+
+  // Encode
+  const encodedString = `data:image/png;base64,${encodeURI(base64String)}`;
+  
+  // Return the base64 encoded string
+  return encodedString;
+}

@@ -28,3 +28,16 @@ function getAccountFields(accountId) {
   const accountFields = JSON.parse(response.getContentText());
   return accountFields;
 }
+
+function putAccountFields(accountId, payload) {
+  if (!accountId) return false;
+  //https://developers.activecampaign.com/reference/retrieve-an-account
+  const response = UrlFetchApp.fetch(`${acAPI}/accounts/${accountId}`,{
+    method: 'put',
+    headers: {'Api-Token': acKey},
+    payload: JSON.stringify(payload)
+  });
+  //https://developers.google.com/apps-script/reference/url-fetch/http-response#getContentText()
+  const account = JSON.parse(response.getContentText());
+  return account;
+}
