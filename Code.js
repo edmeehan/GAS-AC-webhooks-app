@@ -1,7 +1,4 @@
-const appProps = PropertiesService.getScriptProperties();
 const webhookResult = {status:'success'};
-const acDomain = appProps.getProperty('acDomain');
-const acKey = appProps.getProperty('acKey');
 let requestParameters;
 
 function doPost(e = {}) {
@@ -17,7 +14,7 @@ function doPost(e = {}) {
   if (
     Object.hasOwn(query,'key') &&
     Object.hasOwn(query,'id') &&
-    query.key[0] === appProps.getProperty('key')
+    query.key[0] === PropertiesService.getScriptProperties().getProperty('key')
   ) {
     requestParameters = parameter;
     switch (query.id[0]) {

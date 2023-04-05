@@ -3,8 +3,6 @@
 // PROJECT STAGE - QUALIFIED LEAD : ID = 3
 
 function webhook_1 () {
-  const acDomain = appProps.getProperty('acDomain');
-  const acKey = appProps.getProperty('acKey');
   const contactId = requestParameters['contact[id]'];
   const displayVars = { // accountName, dealName, dealValue
     accountName: requestParameters['contact[orgname]']
