@@ -1,56 +1,53 @@
-// https://edmeehan.activehosted.com/series/23
-// PROJECTS PIPELINE : ID = 1
-// PROJECT STAGE - QUALIFIED LEAD : ID = 3
+// https://edmeehan.activehosted.com/series/19 - Stage Entered - Qualified Lead
+// makes a client folder and adds a copy of the proposal to it
+function webhook_ac19(testID) {
+  const contactId = testID || requestParameters['contact[id]'];
 
-function webhook_1 () {
-  const contactId = requestParameters['contact[id]'];
-  const displayVars = { // accountName, dealName, dealValue
-    accountName: requestParameters['contact[orgname]']
-  };
-  const clientFolderId = appProps.getProperty('driveClientFolder');
-  let deal;
-  let accountFolderId;
+  const contact = ActiveCampaignAPI.fetchContact(contactId);
+  const account = contact.fetchAccount();
+  const deals = contact.dealsQualifiedLead;
 
-  if (!getDeal()) {
+  if (deals.length < 1) {
     webhookResult.status = 'no deal found';
     return;
   }
 
-  Logger.log(deal);
+  // find or create the cleint and project folder
+  const clientsFolderID = PropertiesService.getScriptProperties().getProperty('driveClientsFolder');
+  const clientFolder = findCreateFolder(account.name, clientsFolderID);
+  const dealsInstance = ActiveCampaignAPI.fetchDealFields();
 
-  // DO THESE STEPS
+  deals.forEach(({title,id,value}) => {
+    const projectFolder = findCreateFolder(title, clientFolder.getId());
 
-  // 1. find or create account folder in the client folder
-  findCreateFolder(); // done
+    // Clone and update the Proposal Template and put it in the account folder
+    const proposalTemplateID = PropertiesService.getScriptProperties().getProperty('proposalTemplateID');
+    const proposalFile = DriveApp.getFileById(proposalTemplateID)
+      .makeCopy()
+      .setName('Proposal')
+      .setSharing(DriveApp.Access.ANYONE, DriveApp.Permission.VIEW)
+      .moveTo(projectFolder);
+    const proposalID = proposalFile.getId();
 
-  // 2. Clone and update the Proposal Template and put it in the account folder
+    // Get Proposal Share URL
+    const shareURL = `https://docs.google.com/presentation/d/${proposalID}`;
 
-  // 3. Get Proposal Share URL
+    // Update Proposal with info from deal
+    const presentation = SlidesApp.openById(proposalID);
+    const findAndReplace = [
+      ['{{cost}}', (Number(value) / 100).toString()],
+      ['{{account}}', account.name ]
+    ]
+    findAndReplace.forEach((item) => presentation.replaceAllText(...item, true));
 
-  // 4. Update Deal with Proposal URL
+    // Update Deal with Proposal URL
+    dealsInstance.setValue(shareURL, 'DEAL_PROPOSAL_URL', id);
+  })
 
-  // 5. FINISH - maybe add a trigger or something to set the next steps in motion
+  // FINISH - maybe add a trigger or something to set the next steps in motion
+  console.log('webhook ac19 finished');
+}
 
-  function getDeal() {
-    const contact = getContact(contactId);
-    if (!contact) return false;   
-    //Find the deal that sent the webhook
-    deal = contact.deals.find(({group,stage}) => group === "1" && stage === "3");
-    if (!deal) return false;
-    displayVars.dealName = deal.title;
-    displayVars.dealValue = deal.value; // string with no dicimal place
-
-    return true;
-  }
-
-  function findCreateFolder() {
-    const folders = DriveApp.searchFolders(`title = '${displayVars.accountName}' and '${clientFolderId}' in parents`);
-    if (folders.hasNext()){ // found the folder
-      accountFolderId = folders.next().getId();
-    } else { // make the folder
-      const clientFolder = DriveApp.getFolderById(clientFolderId);
-      const folder = clientFolder.createFolder(displayVars.accountName);
-      accountFolderId = folder.getId();
-    }
-  }
+function webhook_ac19_test() {
+  webhook_ac19(58);
 }

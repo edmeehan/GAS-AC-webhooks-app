@@ -1,8 +1,26 @@
 {
   "timeZone": "America/Los_Angeles",
-  "dependencies": {},
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "ActiveCampaignAPI",
+        "libraryId": "1PA28LPKrxLp-BGPZlKSzfTbjVKc8fn_D9p8XOOOeJgFzNMCQmjZEjK8p",
+        "version": "3"
+      },
+      {
+        "userSymbol": "TimeularAPI",
+        "libraryId": "1aJourk8blPm34RsVohsDtSmHG2dls-8SPqzrPaX_5h6hJKg8leeCW5aC",
+        "version": "2"
+      },
+      {
+        "userSymbol": "ESignaturesAPI",
+        "libraryId": "1M9KfIn-lSyd1OqxbKV-M54WHrGglZ7pXal1wUf5EQSI92sQfEiEvQWd7",
+        "version": "1"
+      }
+    ]
+  },
   "webapp": {
     "executeAs": "USER_DEPLOYING",
     "access": "ANYONE_ANONYMOUS"

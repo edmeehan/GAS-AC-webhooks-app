@@ -1,70 +1,53 @@
-// https://edmeehan.activehosted.com/series/23
-// account field ids:
-// 13: webdev total, 14: monthly budget, 15: hourly rate, 19: graphic URL, 17: Timeular Mention ID, 18: meeting total
+// https://edmeehan.activehosted.com/series/23 - Clients on retainer - weekly hours report email
+// updates account with timeular data used for weekly progress emails
+function webhook_ac23(testID) {
+  const contactId = testID || requestParameters['contact[id]'];
 
-function webhook_2() {
-  const contactId = requestParameters['contact[id]'];
-
-  // fetch user account > get org id
-  // https://edmeehan.api-us1.com/api/3/accounts/${accountID}
-  const contact = getContact(contactId);
-
+  const contact = ActiveCampaignAPI.fetchContact(contactId);
   if (!contact) {
     webhookResult.status = 'no contact';
     return;
   }
 
-  const { id: accountId } = contact?.accounts[0] || {};
-
-  // fetch org information -> https://edmeehan.api-us1.com/api/3/accounts/${accountID}/accountCustomFieldData
-  // get hourly rate & monthly budget
-  const accountFields = getAccountFields(accountId);
-
-  if (!accountFields) {
+  const account = contact.fetchAccount();
+  if (!account) {
     webhookResult.status = 'no account';
     return;
   }
 
-  const fields = accountFields?.customerAccountCustomFieldData?.filter(({custom_field_id}) => {
-    return ['14','15','17'].includes(custom_field_id);
-  }).map((item) => {
-    switch (item.custom_field_id) {
-      case '14': return {'budget': Number(item.custom_field_number_value) };
-      case '15': return {'hourly_rate': Number(item.custom_field_number_value) };
-      case '17': return {'timeular_mention': Number(item.custom_field_number_value) };
-    }
-  });
-  const { budget, hourly_rate, timeular_mention } = Object.assign(...fields);
-
-  // fetch hours from timerly
-  // https://api.timeular.com/api/v3/report/data/2023-03-01T08:00:00.000/2023-04-01T07:59:59.999
-  const [start,end] = getCurrentMonthBounds();
-  const {webdev, meeting} = montlyHourReport(start,end,timeular_mention);
-
-  // fetch graphic to display in email
-  // https://developers.google.com/chart/interactive/docs/quick_start
-  const imageEncodedString = createBarChart(webdev, meeting, budget);
+  const timeular = TimeularAPI.fetchCurrentMonth(account.timeularMentionID);
+  const imageEncodedString = createBarChart(
+    timeular.totalWebDevHours,
+    timeular.totalMeetingHours,
+    account.monthlyHoursBudget
+  );
 
   // Update Active Campaign with new values
-  const payload = {
+  const BILLABLE_HOURS_MTD = 13;
+  const MEETING_HOURS_MTD = 18;
+  const HOURS_CHART = 19;
+  account.setAccountFields({
     account: {
       fields: [
         {
-          customFieldId: 13,
-          fieldValue: webdev
+          customFieldId: BILLABLE_HOURS_MTD,
+          fieldValue: timeular.totalWebDevHours
         },
         {
-          customFieldId: 18,
-          fieldValue: meeting
+          customFieldId: MEETING_HOURS_MTD,
+          fieldValue: timeular.totalMeetingHours
         },
         {
-          customFieldId: 19,
+          customFieldId: HOURS_CHART,
           fieldValue: imageEncodedString
         }
       ]
     }
-  }
-  const account = putAccountFields(accountId, payload);
+  })
 
-  // console.log(account)
+  console.log('webhook ac23 finished');
+}
+
+function webhook_ac23_test() {
+  webhook_ac23(77);
 }
