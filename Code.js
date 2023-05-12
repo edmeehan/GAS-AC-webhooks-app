@@ -18,7 +18,8 @@ function doPost(e = {}) {
     query.key[0] === webhookKey
   ) {
     requestParameters = parameter;
-    requestBody = JSON.parse(postData.contents);
+    console.log(postData.type);
+    if (postData.type.toLowerCase().includes('json')) requestBody = JSON.parse(postData.contents);
 
     switch (query.id[0]) {
       case 'automation-19-webhook': webhook_ac19(); break;

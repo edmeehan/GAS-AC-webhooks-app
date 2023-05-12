@@ -1,6 +1,7 @@
 // https://edmeehan.activehosted.com/series/19 - Stage Entered - Qualified Lead
 // makes a client folder and adds a copy of the proposal to it
 function webhook_ac19(testID) {
+  console.log('webhook ac19 started - ', testID);
   const contactId = testID || requestParameters['contact[id]'];
 
   const contact = ActiveCampaignAPI.fetchContact(contactId);

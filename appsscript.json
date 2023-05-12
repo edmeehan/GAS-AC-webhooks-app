@@ -7,7 +7,7 @@
       {
         "userSymbol": "ActiveCampaignAPI",
         "libraryId": "1PA28LPKrxLp-BGPZlKSzfTbjVKc8fn_D9p8XOOOeJgFzNMCQmjZEjK8p",
-        "version": "3"
+        "version": "5"
       },
       {
         "userSymbol": "TimeularAPI",
@@ -17,7 +17,7 @@
       {
         "userSymbol": "ESignaturesAPI",
         "libraryId": "1M9KfIn-lSyd1OqxbKV-M54WHrGglZ7pXal1wUf5EQSI92sQfEiEvQWd7",
-        "version": "1"
+        "version": "2"
       }
     ]
   },

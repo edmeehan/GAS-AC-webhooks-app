@@ -1,4 +1,5 @@
 function webhook_esig(tStatus, tMetaData) {
+  console.log('webhook contract-signed started -',tStatus,tMetaData);
   const { status, data } = requestBody || {};
   const webhookStatus = tStatus || status;
   const meta = JSON.parse(tMetaData || data?.contract?.metadata || "{}");

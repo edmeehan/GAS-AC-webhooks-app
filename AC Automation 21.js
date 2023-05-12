@@ -1,6 +1,7 @@
 // https://edmeehan.activehosted.com/series/21 - Stage Entered - Proposal Sent
 // sends the contract and retainer invoice
 function webhook_ac21(testID) {
+  console.log('webhook ac21 started -', testID);
   const contactId = testID || requestParameters['contact[id]'];
 
   const contact = ActiveCampaignAPI.fetchContact(contactId);
@@ -29,15 +30,17 @@ function webhook_ac21(testID) {
     servicesList,
     paymentDetailsList
   };
-  const contractURL = contract.sendServiceAgreement(testID ? true : false);
+  const contractResponse = contract.sendServiceAgreement(testID ? true : false);
 
-  if (!contractURL) {
+  if (!contractResponse?.data?.contract?.signers) {
     webhookResult.status = 'something went wrong with the contract send';
     return;
   }
 
+  const {sign_page_url} = contractResponse.data.contract.signers.find(({email}) => email === contact.email);
+
   // Update Deal with Proposal URL
-  dealInstance.setValue(contractURL, 'DEAL_AGREEMENT_URL');
+  dealInstance.setValue(sign_page_url, 'DEAL_AGREEMENT_URL');
 
   console.log('webhook ac21 finished');
 }
