@@ -1,9 +1,8 @@
 // https://edmeehan.activehosted.com/series/23 - Clients on retainer - weekly hours report email
 // updates account with timeular data used for weekly progress emails
 function webhook_ac23(testID) {
-  console.log('webhook ac23 started -', testID);
-
   const contactId = testID || requestParameters['contact[id]'];
+  console.log('webhook ac23 started -', contactId);
 
   const contact = ActiveCampaignAPI.fetchContact(contactId);
   if (!contact) {

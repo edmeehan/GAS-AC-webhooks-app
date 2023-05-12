@@ -1,8 +1,8 @@
 // https://edmeehan.activehosted.com/series/21 - Stage Entered - Proposal Sent
 // sends the contract and retainer invoice
 function webhook_ac21(testID) {
-  console.log('webhook ac21 started -', testID);
   const contactId = testID || requestParameters['contact[id]'];
+  console.log('webhook ac21 started -', contactId);
 
   const contact = ActiveCampaignAPI.fetchContact(contactId);
   const account = contact.fetchAccount();

@@ -1,8 +1,8 @@
 function webhook_esig(tStatus, tMetaData) {
-  console.log('webhook contract-signed started -',tStatus,tMetaData);
   const { status, data } = requestBody || {};
   const webhookStatus = tStatus || status;
   const meta = JSON.parse(tMetaData || data?.contract?.metadata || "{}");
+  console.log('webhook eSignature started -',webhookStatus,meta);
 
   if (webhookStatus === 'contract-signed') {
     const {dealID} = meta;
@@ -17,7 +17,7 @@ function webhook_esig(tStatus, tMetaData) {
     // Update Deal with Proposal URL
     dealsInstance.setValue('Signed', 'DEAL_AGREEMENT_STATUS', dealID);
 
-    console.log('webhook contract-signed finished');
+    console.log('webhook eSignature finished');
   }
 }
 
